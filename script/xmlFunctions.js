@@ -11,7 +11,17 @@ $(document).ready(function(){
                 
                 $(this).find('messages').each(function()
                 {
-                    console.log($(this).find('title').text());
+                    $(this).find('message').each(function()
+                    {
+                        $("#accidentList").append(
+                            "<p class='list'>"+ 
+                            $(this).find('title').text() + "</br>" +
+                            $(this).find('createddate').text() + "</br>" +
+                            $(this).find('exactlocation').text() + "</br>" +
+                            $(this).find('description').text() + "</br>" +
+                            $(this).find('subcategory').text() 
+                            +"</p>");
+                    });
                 });
             });
         }

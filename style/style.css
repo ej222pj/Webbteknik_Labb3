@@ -20,6 +20,7 @@ html, body {
 #footer {
 	width: 100%;
 	height: 100px;
+	float: left;
 }
 
 /* Site specific */
@@ -27,4 +28,12 @@ html, body {
 { 
 	width: 500px; 
 	height: 300px;
+	float: left;
+}
+
+#accidentList{
+	width: 200px;
+	height: 300px;
+	overflow-y: auto; 
+	float: left;
 }
