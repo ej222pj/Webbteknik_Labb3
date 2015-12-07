@@ -31,9 +31,22 @@ html, body {
 	float: left;
 }
 
-#accidentList{
-	width: 200px;
+#accidentList
+{
+	width: 400px;
 	height: 300px;
 	overflow-y: auto; 
 	float: left;
+	border: 1px solid red;
+}
+.listItem
+{
+	border: 1px solid black;
+	margin: 2px;
+}
+
+.listItem p
+{
+	margin: 0;
+	padding: 0;
 }

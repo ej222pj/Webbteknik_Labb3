@@ -1,26 +1,25 @@
+"use strict";
+
 $(document).ready(function(){
     $.ajax({
         type: "GET",
         url: "http://api.sr.se/api/v2/traffic/messages",
         dataType: "xml",
         success: function(xml) {
-            $(xml).find('sr').each(function(){
-
-                //var id = $(this).attr('id');
-               // var title = $(this).find('title').text();
-                
+            $(xml).find('sr').each(function()
+            {
                 $(this).find('messages').each(function()
                 {
                     $(this).find('message').each(function()
                     {
                         $("#accidentList").append(
-                            "<p class='list'>"+ 
-                            $(this).find('title').text() + "</br>" +
-                            $(this).find('createddate').text() + "</br>" +
-                            $(this).find('exactlocation').text() + "</br>" +
-                            $(this).find('description').text() + "</br>" +
+                            "<div class='listItem'><p><strong>Plats: "+ 
+                            $(this).find('title').text() + "</strong></p></br><p>Tid: " +
+                            $(this).find('createddate').text() + "</p></br><p>Position: " +
+                            $(this).find('exactlocation').text() + "</p></br><p>Beskrivning: " +
+                            $(this).find('description').text() + "</p></br><p>Kategori: " +
                             $(this).find('subcategory').text() 
-                            +"</p>");
+                            +"</p></div>");
                     });
                 });
             });
