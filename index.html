@@ -11,19 +11,6 @@
 
 		<link rel="stylesheet" type="text/css" href="./style/style.css">
 
-		<!-- Kan va bra ? -->
-		<!-- 
-		<script type="text/javascript">
-			
-			function retrieveExternalData()
-			{
-				var script = document.createElement("script");
-				script.src = 'http://www.example.com/mashups/someservice';
-				script.type = 'text/javascript';
-				document.body.appendChild(script);
-			}
-		</script>
-		-->
 	</head>
 
 	<body> 
@@ -33,6 +20,9 @@
 			</div>
 			
 			<div id="content">
+				<div id="numberOfNews">
+				</div>
+
 				<div id="accidentList">
 				</div>
 				
@@ -42,17 +32,15 @@
 			
 			<div id="footer">
 				<p>Footer!</p>
+				<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
 				<!-- Include Google Maps Javascript Library -->
-				<script src="http://maps.googleapis.com/maps/api/js?&key=AIzaSyDiFvHbePq1mbzwQPCV9GoG1VgZev7BU4A"></script>
-
-				<!-- Get the map -->
-				<script type="text/javascript" src="./script/mapFunctions.js"></script>
-
-				<!-- JQuery -->
-				<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-
-				<script type="text/javascript" src="./script/xmlFunctions.js"></script>
-
+				<script src="http://maps.googleapis.com/maps/api/js"></script>
+				
+				<script type="text/javascript" src="./script/traficNewsScripts/MapFunctions.js"></script>
+				<script type="text/javascript" src="./script/traficNewsScripts/JsonFunctions.js"></script>
+				<script type="text/javascript" src="./script/traficNewsScripts/ListFunctions.js"></script>
+				<script type="text/javascript" src="./script/initScript.js"></script>
 			</div>
 			
 		</div>
