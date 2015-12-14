@@ -1,15 +1,11 @@
 "use strict";
 
 var traficNewsScripts = traficNewsScripts || {};
-//var cache;
-//var cacheKey = 1;
 
 traficNewsScripts.JsonFunctions = function() 
 {
     var traficNewsData;
-    // Create cache object with up to 1000 elements
-    //cache = new ObjectCache(1000);
-    
+
     this.getNewsData = function() {
         return traficNewsData;
     };
@@ -66,13 +62,6 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
     var tempDataObject;
     var d = new Date();
 
-     // Query the request in the cache
-     //console.log(cache.get( cacheKey));
-        
-    // Query the key, must not be older than a minute
-    //var cachedJson = cache.get(cacheKey, 60*1000);
-    // retrieve query from localStorage
-
     //Om tiden har gått ut ska det hämtas en ny Json sträng
     if(localStorage.getItem('lsJsonStoraTime') < d.getTime())
     {
@@ -125,11 +114,10 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
                 //Formaterar, sorterar och ger bara tillbaka messages!
                 var sortedJsonData = sortData(parsedJsonData);
 
-                // Save the object in cache, key may be an object
-                //cache.put(cacheKey, sortedJsonData)
                 // save query to localStorage
                 localStorage.setItem('lsJsonStorag', JSON.stringify(sortedJsonData));
 
+                //Tid json sparas
                 localStorage.setItem('lsJsonStoraTime', (d.getTime() + (60*1000)).toString());
 
                 for(var i = 0; i < sortedJsonData.length; i++) {
