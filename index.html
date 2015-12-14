@@ -20,9 +20,18 @@
 			</div>
 			
 			<div id="content">
-				<div id="numberOfNews">
-				</div>
+				<div>
+					<div id="numberOfNews">
+					</div>
 
+					<select id="categories">
+						<option selected="selected" value="4">Alla</option>
+						<option value="0">Vägtrafik</option>
+						<option value="1">Kollektivtrafik</option>
+						<option value="2">Planerad strörning</option>
+						<option value="3">Övrigt</option>
+					</select>
+			    </div>
 				<div id="accidentList">
 				</div>
 				
@@ -40,6 +49,7 @@
 				<script type="text/javascript" src="./script/traficNewsScripts/MapFunctions.js"></script>
 				<script type="text/javascript" src="./script/traficNewsScripts/JsonFunctions.js"></script>
 				<script type="text/javascript" src="./script/traficNewsScripts/ListFunctions.js"></script>
+				<script type="text/javascript" src="./script/traficNewsScripts/ObjectCache.js"></script>
 				<script type="text/javascript" src="./script/initScript.js"></script>
 			</div>
 			

@@ -9,6 +9,7 @@ traficNewsScripts.ListFunctions = function(traficNewsData)
 
 traficNewsScripts.ListFunctions.prototype.AddDataToList = function(traficNewsData) {  
     var listDivs = [];
+    var that = this;
 
     for(var i = 0; i < traficNewsData.length; i++) {
         listDivs.push(this.CreateList(traficNewsData[i]));

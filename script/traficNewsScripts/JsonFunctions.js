@@ -1,6 +1,8 @@
 "use strict";
 
 var traficNewsScripts = traficNewsScripts || {};
+var cache;
+var cacheKey;
 
 traficNewsScripts.JsonFunctions = function() 
 {
@@ -8,11 +10,6 @@ traficNewsScripts.JsonFunctions = function()
     
     this.getNewsData = function() {
         return traficNewsData;
-    };
-    
-    this.setData = function(_traficNewsData) 
-    {
-        traficNewsData = _traficNewsData;
     };
 };
 
@@ -55,52 +52,102 @@ function sortData(data)
 }
 
 //https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
-traficNewsScripts.JsonFunctions.prototype.loadData = function() 
+traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue) 
 {
-    var oReq;
-    var parsedJsonData;
-    var traficNewsData = [];
-    var that = this;
-    var tempDataObject;
+     // Query the request in the cache
+    // console.log(cache.get( cacheKey));
+        
+    // Query the key, must not be older than a minute
+    console.log(cache.get( cacheKey, 60*1000));
+    var cachedJson = cache.get(cacheKey, 60*1000);
 
-    try
-    {
-        // Opera 8.0+, Firefox, Chrome, Safari
-        oReq = new XMLHttpRequest();
-    }
-    catch (e)
-    {
-        // Internet Explorer Browsers
+
+    if(cachedJson == null){
+        var oReq;
+        var parsedJsonData;
+        var traficNewsData = [];
+        var that = this;
+        var tempDataObject;
+
         try
         {
-            oReq = new ActiveXObject("Msxml2.XMLHTTP");
+            // Opera 8.0+, Firefox, Chrome, Safari
+            oReq = new XMLHttpRequest();
         }
-        catch (e) 
+        catch (e)
         {
+            // Internet Explorer Browsers
             try
             {
-                oReq = new ActiveXObject("Microsoft.XMLHTTP");
+                oReq = new ActiveXObject("Msxml2.XMLHTTP");
             }
-            catch (e)
+            catch (e) 
             {
-                // Something went wrong
-                alert("Your browser broke!");
-                return false;
-            }   
-       }
+                try
+                {
+                    oReq = new ActiveXObject("Microsoft.XMLHTTP");
+                }
+                catch (e)
+                {
+                    // Something went wrong
+                    alert("Your browser broke!");
+                    return false;
+                }   
+           }
+        }
+        //http://mdn.beonex.com/en/DOM/XMLHttpRequest/Synchronous_and_Asynchronous_Requests.html
+        oReq.open("GET", "http://api.sr.se/api/v2/traffic/messages?format=json&pagination=false", false);
+        oReq.onreadystatechange = function() {
+            if(oReq.readyState === 4 && oReq.status === 200) 
+            {
+                //Går inte att få json sorterad ifrån sr
+                parsedJsonData = JSON.parse(oReq.responseText);
+
+                //Formaterar, sorterar och ger bara tillbaka messages!
+                var sortedJsonData = sortData(parsedJsonData);
+
+                // Save the object in cache, key may be an object
+                cache.put(cacheKey, sortedJsonData)
+
+                for(var i = 0; i < sortedJsonData.length; i++) {
+                    tempDataObject = 
+                    {
+                        priority: "", 
+                        createdDate: "", 
+                        traficTitle: "", 
+                        exactLocation: "", 
+                        descript: "", 
+                        latitude: "", 
+                        longitude: "", 
+                        category: "", 
+                        subCategory: ""
+                    };
+
+                    tempDataObject.priority = sortedJsonData[i].priority.toString();
+                    tempDataObject.createdDate = sortedJsonData[i].createddate
+                    tempDataObject.traficTitle = sortedJsonData[i].title;
+                    tempDataObject.exactLocation = sortedJsonData[i].exactlocation;
+                    tempDataObject.descript = sortedJsonData[i].description;
+                    tempDataObject.latitude = sortedJsonData[i].latitude.toString();
+                    tempDataObject.longitude = sortedJsonData[i].longitude.toString();
+                    tempDataObject.category = sortedJsonData[i].category.toString();
+                    tempDataObject.subCategory = sortedJsonData[i].subcategory;
+
+                    if(tempDataObject.category == filterValue || filterValue == 4){
+                        traficNewsData.push(new traficNewsScripts.JsonFunctions.TraficNewsObject(tempDataObject));
+                    }
+                }
+            }
+            else
+            {
+                //Kan inte tanka json, fixa ett error
+            }
+        };
+        oReq.send();
     }
-    //http://mdn.beonex.com/en/DOM/XMLHttpRequest/Synchronous_and_Asynchronous_Requests.html
-    oReq.open("GET", "http://api.sr.se/api/v2/traffic/messages?format=json&pagination=false", false);
-    oReq.onreadystatechange = function() {
-        if(oReq.readyState === 4 && oReq.status === 200) 
-        {
-            //Går inte att få json sorterad ifrån sr
-            parsedJsonData = JSON.parse(oReq.responseText);
-
-            //Formaterar, sorterar och ger bara tillbaka messages!
-            var sortedJsonData = sortData(parsedJsonData);
-
-            for(var i = 0; i < sortedJsonData.length; i++) {
+    else//Om det finns en cachad verson
+    { 
+        for(var i = 0; i < cachedJson.length; i++) {
             tempDataObject = 
             {
                 priority: "", 
@@ -114,27 +161,21 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function()
                 subCategory: ""
             };
 
-            tempDataObject.priority = sortedJsonData[i].priority.toString();
-            tempDataObject.createdDate = sortedJsonData[i].createddate
-            tempDataObject.traficTitle = sortedJsonData[i].title;
-            tempDataObject.exactLocation = sortedJsonData[i].exactlocation;
-            tempDataObject.descript = sortedJsonData[i].description;
-            tempDataObject.latitude = sortedJsonData[i].latitude.toString();
-            tempDataObject.longitude = sortedJsonData[i].longitude.toString();
-            tempDataObject.category = sortedJsonData[i].category.toString();
-            tempDataObject.subCategory = sortedJsonData[i].subcategory;
+            tempDataObject.priority = cachedJson[i].priority.toString();
+            tempDataObject.createdDate = cachedJson[i].createddate
+            tempDataObject.traficTitle = cachedJson[i].title;
+            tempDataObject.exactLocation = cachedJson[i].exactlocation;
+            tempDataObject.descript = cachedJson[i].description;
+            tempDataObject.latitude = cachedJson[i].latitude.toString();
+            tempDataObject.longitude = cachedJson[i].longitude.toString();
+            tempDataObject.category = cachedJson[i].category.toString();
+            tempDataObject.subCategory = cachedJson[i].subcategory;
 
-            traficNewsData.push(new traficNewsScripts.JsonFunctions.TraficNewsObject(tempDataObject));
+            if(tempDataObject.category == filterValue || filterValue == 4){
+                traficNewsData.push(new traficNewsScripts.JsonFunctions.TraficNewsObject(tempDataObject));
             }
-
-            that.setData(traficNewsData);
         }
-        else
-        {
-            //Kan inte tanka json, fixa ett error
-        }
-    };
-    oReq.send();
+    }
 };
 
 traficNewsScripts.JsonFunctions.TraficNewsObject = function(dataObject) 
