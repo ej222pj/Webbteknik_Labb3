@@ -1,14 +1,14 @@
 "use strict";
 
 var traficNewsScripts = traficNewsScripts || {};
-var cache;
-var cacheKey = 1;
+//var cache;
+//var cacheKey = 1;
 
 traficNewsScripts.JsonFunctions = function() 
 {
     var traficNewsData;
     // Create cache object with up to 1000 elements
-    cache = new ObjectCache(1000);
+    //cache = new ObjectCache(1000);
     
     this.getNewsData = function() {
         return traficNewsData;
@@ -64,13 +64,24 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
     var traficNewsData = [];
     var that = this;
     var tempDataObject;
+    var d = new Date();
+
      // Query the request in the cache
-     console.log(cache.get( cacheKey));
+     //console.log(cache.get( cacheKey));
         
     // Query the key, must not be older than a minute
-    var cachedJson = cache.get(cacheKey, 60*1000);
+    //var cachedJson = cache.get(cacheKey, 60*1000);
     // retrieve query from localStorage
-    var localStorageJson = JSON.parse(localStorage.getItem('lsJsonS'));
+
+    //Om tiden har gått ut ska det hämtas en ny Json sträng
+    if(localStorage.getItem('lsJsonStoraTime') < d.getTime())
+    {
+        localStorage.removeItem("lsJsonStorag");
+    }
+    else
+    {
+        var localStorageJson = JSON.parse(localStorage.getItem('lsJsonStorag'));
+    }
 
     if(localStorageJson == null){
         console.log("Not Cache")
@@ -115,9 +126,11 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
                 var sortedJsonData = sortData(parsedJsonData);
 
                 // Save the object in cache, key may be an object
-                cache.put(cacheKey, sortedJsonData)
+                //cache.put(cacheKey, sortedJsonData)
                 // save query to localStorage
-                localStorage.setItem('lsJsonS', JSON.stringify(sortedJsonData));
+                localStorage.setItem('lsJsonStorag', JSON.stringify(sortedJsonData));
+
+                localStorage.setItem('lsJsonStoraTime', (d.getTime() + (60*1000)).toString());
 
                 for(var i = 0; i < sortedJsonData.length; i++) {
                     tempDataObject = 
