@@ -2,14 +2,21 @@
 
 var traficNewsScripts = traficNewsScripts || {};
 var cache;
-var cacheKey;
+var cacheKey = 1;
 
 traficNewsScripts.JsonFunctions = function() 
 {
     var traficNewsData;
+    // Create cache object with up to 1000 elements
+    cache = new ObjectCache(1000);
     
     this.getNewsData = function() {
         return traficNewsData;
+    };
+
+    this.setData = function(newsData) 
+    {
+        traficNewsData = newsData;
     };
 };
 
@@ -54,21 +61,22 @@ function sortData(data)
 //https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest
 traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue) 
 {
+    var traficNewsData = [];
+    var that = this;
+    var tempDataObject;
      // Query the request in the cache
-    // console.log(cache.get( cacheKey));
+     console.log(cache.get( cacheKey));
         
     // Query the key, must not be older than a minute
-    console.log(cache.get( cacheKey, 60*1000));
     var cachedJson = cache.get(cacheKey, 60*1000);
+    // retrieve query from localStorage
+    var localStorageJson = JSON.parse(localStorage.getItem('lsJsonS'));
 
-
-    if(cachedJson == null){
+    if(localStorageJson == null){
+        console.log("Not Cache")
         var oReq;
         var parsedJsonData;
-        var traficNewsData = [];
-        var that = this;
-        var tempDataObject;
-
+        
         try
         {
             // Opera 8.0+, Firefox, Chrome, Safari
@@ -108,6 +116,8 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
 
                 // Save the object in cache, key may be an object
                 cache.put(cacheKey, sortedJsonData)
+                // save query to localStorage
+                localStorage.setItem('lsJsonS', JSON.stringify(sortedJsonData));
 
                 for(var i = 0; i < sortedJsonData.length; i++) {
                     tempDataObject = 
@@ -137,6 +147,7 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
                         traficNewsData.push(new traficNewsScripts.JsonFunctions.TraficNewsObject(tempDataObject));
                     }
                 }
+                that.setData(traficNewsData);
             }
             else
             {
@@ -147,7 +158,8 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
     }
     else//Om det finns en cachad verson
     { 
-        for(var i = 0; i < cachedJson.length; i++) {
+        console.log("Cache")
+        for(var i = 0; i < localStorageJson.length; i++) {
             tempDataObject = 
             {
                 priority: "", 
@@ -161,20 +173,21 @@ traficNewsScripts.JsonFunctions.prototype.loadData = function(filterValue)
                 subCategory: ""
             };
 
-            tempDataObject.priority = cachedJson[i].priority.toString();
-            tempDataObject.createdDate = cachedJson[i].createddate
-            tempDataObject.traficTitle = cachedJson[i].title;
-            tempDataObject.exactLocation = cachedJson[i].exactlocation;
-            tempDataObject.descript = cachedJson[i].description;
-            tempDataObject.latitude = cachedJson[i].latitude.toString();
-            tempDataObject.longitude = cachedJson[i].longitude.toString();
-            tempDataObject.category = cachedJson[i].category.toString();
-            tempDataObject.subCategory = cachedJson[i].subcategory;
+            tempDataObject.priority = localStorageJson[i].priority.toString();
+            tempDataObject.createdDate = localStorageJson[i].createddate
+            tempDataObject.traficTitle = localStorageJson[i].title;
+            tempDataObject.exactLocation = localStorageJson[i].exactlocation;
+            tempDataObject.descript = localStorageJson[i].description;
+            tempDataObject.latitude = localStorageJson[i].latitude.toString();
+            tempDataObject.longitude = localStorageJson[i].longitude.toString();
+            tempDataObject.category = localStorageJson[i].category.toString();
+            tempDataObject.subCategory = localStorageJson[i].subcategory;
 
             if(tempDataObject.category == filterValue || filterValue == 4){
                 traficNewsData.push(new traficNewsScripts.JsonFunctions.TraficNewsObject(tempDataObject));
             }
         }
+        that.setData(traficNewsData);
     }
 };
 

@@ -10,8 +10,6 @@ traficNewsScripts.MapFunctions = function(mapId) {
     var markerClickWindow = null;
     var that = this;
     var categories = document.querySelector("#categories");
-    // Create cache object with up to 1000 elements
-    cache = new ObjectCache( 1000);
 
     map = new google.maps.Map(document.getElementById(mapId), {
         center: {lat: 62.383256, lng: 16.0198304},
@@ -22,7 +20,6 @@ traficNewsScripts.MapFunctions = function(mapId) {
     traficNewsData.loadData(categories.value);
 
     categories.addEventListener("change", function() {
-        traficNewsData = new traficNewsScripts.JsonFunctions();
         traficNewsData.loadData(categories.value); 
         
         that.getTraficNewData = function() {
@@ -80,7 +77,7 @@ traficNewsScripts.MapFunctions = function(mapId) {
         }
         markerClickWindow = null;
     };
-    
+
     that.AddGoogleMarkers();  
     traficNewsListFunc = new traficNewsScripts.ListFunctions(that.getTraficNewData());
 };
