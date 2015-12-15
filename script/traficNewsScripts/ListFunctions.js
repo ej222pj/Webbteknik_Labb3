@@ -18,7 +18,14 @@ traficNewsScripts.ListFunctions.prototype.AddDataToList = function(traficNewsDat
     document.getElementById('numberOfNews').innerHTML = 
     '<p>' + listDivs.length + ' Trafiknyheter presenteras</p>'; 
 
-    document.getElementById('accidentList').innerHTML = listDivs;
+    if(listDivs.length == 0)
+    {
+        document.getElementById('accidentList').innerHTML = "<p>Finns inget att visa!</p>"
+    }
+    else 
+    {
+        document.getElementById('accidentList').innerHTML = listDivs;
+    }
 };
 
 traficNewsScripts.ListFunctions.prototype.CreateList = function(traficDataObject) {
